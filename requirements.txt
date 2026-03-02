@@ -5,14 +5,14 @@ openai==0.27.8
 SpeechRecognition==3.9.0
 openai-whisper @ git+https://github.com/openai/whisper.git
 
-# PyTorch CPU version
+# PyTorch CPU
 torch==2.10.0
 
 # TTS
 pyttsx3==2.90
 
-# Audio Input
+# Audio input
 pyaudio==0.2.13
 
-# Utils
+# Utilities
 tqdm==4.67.3
