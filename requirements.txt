@@ -1,18 +1,18 @@
-# GPT + OpenAI API
+# GPT
 openai==0.27.8
 
-# STT (Speech-to-Text)
+# STT
 SpeechRecognition==3.9.0
 openai-whisper @ git+https://github.com/openai/whisper.git
 
-# PyTorch (CPU)
+# PyTorch CPU version
 torch==2.10.0
 
-# TTS (Text-to-Speech)
+# TTS
 pyttsx3==2.90
 
-# Microphone / Audio input
+# Audio Input
 pyaudio==0.2.13
 
-# Optional utilities
+# Utils
 tqdm==4.67.3
