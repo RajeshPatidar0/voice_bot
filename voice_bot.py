@@ -1,44 +1,36 @@
-import openai
-import speech_recognition as sr
-import pyttsx3
+import whisper
+from transformers import pipeline
+from gtts import gTTS
+import tempfile, os
+from playsound import playsound
 
-openai.api_key = "YOUR_OPENAI_API_KEY"
+# Load Whisper model for STT
+stt_model = whisper.load_model("base")
 
-# Initialize TTS
-engine = pyttsx3.init()
+# Load a small local text-generation model
+generator = pipeline("text-generation", model="facebook/opt-125m")  # lightweight
 
-# Initialize STT
-r = sr.Recognizer()
-mic = sr.Microphone()
-
-def listen():
-    with mic as source:
-        print("Listening...")
-        r.adjust_for_ambient_noise(source)
-        audio = r.listen(source)
-    try:
-        text = r.recognize_google(audio)  # Using Google STT
-        print("You said:", text)
-        return text
-    except:
-        return ""
+def transcribe(audio_file):
+    result = stt_model.transcribe(audio_file)
+    return result["text"]
 
 def generate_response(prompt):
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[{"role":"user","content":prompt}]
-    )
-    return response['choices'][0]['message']['content']
+    result = generator(prompt, max_length=100, do_sample=True)
+    return result[0]['generated_text']
 
 def speak(text):
-    engine.say(text)
-    engine.runAndWait()
+    tts = gTTS(text=text, lang='en')
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".mp3")
+    tts.save(tmp_file.name)
+    playsound(tmp_file.name)
+    os.remove(tmp_file.name)
 
-while True:
-    text = listen()
-    if text.lower() in ["exit", "quit"]:
-        break
-    if text:
-        reply = generate_response(text)
-        print("Bot:", reply)
-        speak(reply)
+# Example usage
+audio_file = "input.wav"  # Replace with your recorded voice file
+print("Transcribing audio...")
+text = transcribe(audio_file)
+print("You said:", text)
+
+reply = generate_response(text)
+print("Bot:", reply)
+speak(reply)
